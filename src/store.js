@@ -3,30 +3,30 @@ import Vuex from 'vuex';
 
 import { db } from './firebase.js';
 
-import {
-  INITIALIZE_PROJECT,
-  PROJECT_INITIALIZED,
-  FETCH_COLUMNS,
-  COLUMNS_FETCHED,
-} from './mutation_types';
-import { stat } from 'fs';
-
 const projectsRef = db.ref('projects');
 const columnsRef = db.ref('columns');
+const cardsRef = db.ref('tasks')
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     project_id: 'project1',
-    columns: [],
+    columns: {},
+    cards: {},
+    card: {},
+    cardDialog: false
   },
   mutations: {
-    [COLUMNS_FETCHED](state, snapshot) {
-      snapshot.forEach(child => {
-        state.columns.push(child.val())
-      })
+    COLUMNS_FETCHED(state, columns) {
+      state.columns = columns
     },
+    CARDS_FETCHED(state, cards) {
+      state.cards = cards
+    },
+    CARD_SELECTED(state, card) {
+      state.cardDialog = true
+    }
   },
   actions: {
     initProjects({ commit }) {
@@ -37,20 +37,34 @@ export default new Vuex.Store({
         columnsRef.child(project_id).push(defaultColumns),
       ])
         .then(() => {
-          commit(PROJECT_INITIALIZED);
+          commit('PROJECT_INITIALIZED');
         });
     },
     fetchColumns({ state, commit }) {
-      let project_id = state.project_id
       columnsRef
-        .child(project_id)
-        .orderByChild('order')
-        .once('value', (snapshot) => {
-          commit(COLUMNS_FETCHED, snapshot);
+        .child(state.project_id)
+        .on('value', (snapshot) => {
+          commit('COLUMNS_FETCHED', snapshot.val());
         });
     },
+    fetchCards({ state, commit }) {
+      cardsRef
+        .child(state.project_id)
+        .on('value', (snapshot) => {
+          commit('CARDS_FETCHED', snapshot.val())
+        })
+    },
+    addCard({ state }, newCard) {
+      columnsRef
+        .child(`${state.project_id}/${newCard.columnKey}/cards`)
+        .push(newCard.content)
+    },
+    selectCard({ state, commit }) {
+      commit('CARD_SELECTED')
+    }
   },
   getters: {
-    columns: state => state.columns
+    columns: state => state.columns,
+    cards: state => columnKey => state.cards[columnKey]
   }
 });

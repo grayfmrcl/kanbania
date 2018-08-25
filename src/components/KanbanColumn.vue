@@ -1,25 +1,19 @@
 <template>
   <v-flex xs3>
-    <v-toolbar :color="column.color" dark>
+    <v-toolbar :color="columnColor" dark>
       <v-toolbar-title>{{column.title}}</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn icon @click="addCard">
+        <v-icon>add</v-icon>
+      </v-btn>
     </v-toolbar>
-    <v-card>
+    <v-card :class="columnColor" class="lighten-4">
         <v-container fluid grid-list-lg>
           <v-layout row wrap>
-
-            <v-flex xs12>
-            <v-card color="blue-grey darken-2" class="white--text">
-              <v-card-title primary-title>
-                <div class="headline">Unlimited music now</div>
-                <div>Listen to your favorite artists and albums whenever and wherever, online and offline.</div>
-              </v-card-title>
-              <v-card-actions>
-                <v-btn flat dark>Listen now</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-
+            <KanbanCard 
+              v-for="card in cards" 
+              :key="card.key" 
+              :card="card" />
           </v-layout>
         </v-container>
       </v-card>
@@ -27,12 +21,40 @@
 </template>
 
 <script>
+import KanbanCard from "@/components/KanbanCard";
+
 export default {
   name: "KanbanColumn",
-  data() {
-    return {};
+  components: {
+    KanbanCard
   },
-  props: ["column"]
+  props: ["column"],
+  methods: {
+    addCard() {
+      let card = { title: "Another task" };
+      this.$store.dispatch("addCard", {
+        columnKey: "selected",
+        content: card
+      });
+    }
+  },
+  computed: {
+    columnColor() {
+      return this.column.color || "grey";
+    },
+    cards() {
+      let cardsObj = this.$store.getters.cards(this.column.key);
+      if (cardsObj) {
+        return Object.keys(cardsObj)
+          .map(key => Object.assign({ key }, cardsObj[key]))
+          .sort((a, b) => {
+            return a.priority === "high" ? -1 : a.priority === "low" ? 0 : 1;
+          });
+      } else {
+        return [];
+      }
+    }
+  }
 };
 </script>
 

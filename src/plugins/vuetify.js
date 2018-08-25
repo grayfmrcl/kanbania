@@ -2,6 +2,7 @@ import Vue from 'vue';
 import {
   Vuetify,
   VApp,
+  VAvatar,
   VNavigationDrawer,
   VFooter,
   VList,
@@ -10,6 +11,9 @@ import {
   VGrid,
   VToolbar,
   VCard,
+  VChip,
+  VDivider,
+  VDialog,
   transitions,
 } from 'vuetify';
 import 'vuetify/src/stylus/app.styl';
@@ -17,6 +21,7 @@ import 'vuetify/src/stylus/app.styl';
 Vue.use(Vuetify, {
   components: {
     VApp,
+    VAvatar,
     VNavigationDrawer,
     VFooter,
     VList,
@@ -25,6 +30,9 @@ Vue.use(Vuetify, {
     VGrid,
     VToolbar,
     VCard,
+    VChip,
+    VDivider,
+    VDialog,
     transitions,
   },
   theme: {

@@ -5,7 +5,11 @@
     </v-layout>
     <v-container fluid grid-list-lg>
       <v-layout row wrap>
-      <KanbanColumn v-for="(column, key) in columns" :key="key" :column="column" />
+      <KanbanColumn 
+        v-for="column in columns" 
+        :key="column.key" 
+        :column="column" />
+      <KanbanCardDetail />
     </v-layout>
     </v-container>
   </v-container>
@@ -13,18 +17,24 @@
 
 <script>
 import KanbanColumn from "@/components/KanbanColumn";
+import KanbanCardDetail from "@/components/KanbanCardDetail";
 
 export default {
   name: "KanbanBoard",
   components: {
-    KanbanColumn
+    KanbanColumn,
+    KanbanCardDetail
   },
   created() {
     this.$store.dispatch("fetchColumns");
+    this.$store.dispatch("fetchCards");
   },
   computed: {
     columns: function() {
-      return this.$store.getters.columns;
+      let columnObj = this.$store.getters.columns;
+      return Object.keys(columnObj)
+        .map(key => Object.assign({ key }, columnObj[key]))
+        .sort((a, b) => a.order > b.order);
     }
   }
 };
