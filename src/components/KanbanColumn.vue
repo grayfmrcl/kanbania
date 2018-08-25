@@ -1,9 +1,10 @@
 <template>
-  <v-container>
-    <v-toolbar color="pink" dark>
-      <v-toolbar-title> Column 1</v-toolbar-title>
+  <v-flex xs3>
+    <v-toolbar :color="column.color" dark>
+      <v-toolbar-title>{{column.title}}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-card>
+    </v-toolbar>
+    <v-card>
         <v-container fluid grid-list-lg>
           <v-layout row wrap>
 
@@ -22,13 +23,16 @@
           </v-layout>
         </v-container>
       </v-card>
-    </v-toolbar>
-  </v-container>
+  </v-flex>
 </template>
 
 <script>
 export default {
-  name: "KanbanColumn"
+  name: "KanbanColumn",
+  data() {
+    return {};
+  },
+  props: ["column"]
 };
 </script>
 
