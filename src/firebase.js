@@ -1,6 +1,6 @@
-import { initializeApp } from 'firebase'
+import { initializeApp } from 'firebase';
 
-console.log(process.env.APP_VUE_FB_DB_URL)
+console.log(process.env.VUE_APP_FIREBASE_DB_URL);
 
 const firebaseApp = initializeApp({
   apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
@@ -8,7 +8,7 @@ const firebaseApp = initializeApp({
   databaseURL: process.env.VUE_APP_FIREBASE_DB_URL,
   projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
   storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.VUE_APP_FIREBASE_SENDER_ID
-})
+  messagingSenderId: process.env.VUE_APP_FIREBASE_SENDER_ID,
+});
 
-export const db = firebaseApp.database()
+export const db = firebaseApp.database();
