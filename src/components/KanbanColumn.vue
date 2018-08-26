@@ -1,40 +1,66 @@
 <template>
-  <v-flex xs3>
-    <v-toolbar :color="column.color" dark>
-      <v-toolbar-title>{{column.title}}</v-toolbar-title>
-      <v-spacer></v-spacer>
-    </v-toolbar>
-    <v-card>
-        <v-container fluid grid-list-lg>
-          <v-layout row wrap>
-
-            <v-flex xs12>
-            <v-card color="blue-grey darken-2" class="white--text">
-              <v-card-title primary-title>
-                <div class="headline">Unlimited music now</div>
-                <div>Listen to your favorite artists and albums whenever and wherever, online and offline.</div>
-              </v-card-title>
-              <v-card-actions>
-                <v-btn flat dark>Listen now</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-
-          </v-layout>
-        </v-container>
-      </v-card>
+  <v-flex xs12 lg3 md4 sm6 class="kanban-column">
+    <v-container fluid grid-list-lg>
+      <div class="kanban-column-header">
+        <div class="title" style="margin: auto">
+          <span>{{column.title}}</span>
+          <span v-if="column.count > 0"> ({{column.count}})</span>
+        </div>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="addCard">
+          <v-icon>add</v-icon>
+        </v-btn>
+      </div>
+      <v-layout row wrap>
+        <KanbanCard 
+          v-for="card in cards" 
+          :key="card.key"
+          :card="card"
+          :columnkey="column.key" />
+      </v-layout>
+    </v-container>
+    
   </v-flex>
 </template>
 
 <script>
+import KanbanCard from "@/components/KanbanCard";
+
 export default {
   name: "KanbanColumn",
-  data() {
-    return {};
+  components: {
+    KanbanCard
   },
-  props: ["column"]
+  props: ["column"],
+  methods: {
+    addCard() {
+      this.$store.commit("ADD_CARD", { columnKey: this.column.key });
+    }
+  },
+  computed: {
+    columnColor() {
+      return this.column.color || "grey";
+    },
+    cards() {
+      let cardsObj = this.$store.getters.cards(this.column.key);
+      if (cardsObj) {
+        return Object.keys(cardsObj)
+          .map(key => Object.assign({ key }, cardsObj[key]))
+          .sort((a, b) => {
+            return a.priority === "high" ? -1 : a.priority === "low" ? 0 : 1;
+          });
+      } else {
+        return [];
+      }
+    }
+  }
 };
 </script>
 
 <style>
+.kanban-column-header {
+  display: flex;
+  flex-flow: row wrap;
+  padding-bottom: 1rem;
+}
 </style>
