@@ -73,12 +73,7 @@ export default new Vuex.Store({
     },
     saveCard({ state, commit }, payload) {
       commit('CARD_UNSELECTED')
-      let card = {
-        activity: payload.activity,
-        estimated: payload.estimated,
-        priority: payload.priority,
-        color: payload.color
-      }
+      let card = mapCard(payload)
       if (payload.cardKey) {
         cardsRef
           .child(`${state.project_id}/${payload.columnKey}/${payload.cardKey}`)
@@ -100,6 +95,20 @@ export default new Vuex.Store({
         columnsRef.child(`${state.project_id}/${payload.columnKey}/count`)
           .transaction(val => (val || 0) - 1)
       }
+    },
+    moveCardToColumn({ state, commit }, payload) {
+      commit('CARD_UNSELECTED')
+      if (payload.cardKey && payload.newColumnKey) {
+        let card = mapCard(payload)
+        cardsRef.child(`${state.project_id}/${payload.columnKey}/${payload.cardKey}`)
+          .remove()
+        columnsRef.child(`${state.project_id}/${payload.columnKey}/count`)
+          .transaction(val => (val || 0) - 1)
+        cardsRef.child(`${state.project_id}/${payload.newColumnKey}/${payload.cardKey}`)
+          .set(card)
+        columnsRef.child(`${state.project_id}/${payload.newColumnKey}/count`)
+          .transaction(val => (val || 0) + 1)
+      }
     }
   },
   getters: {
@@ -109,3 +118,12 @@ export default new Vuex.Store({
     card: state => state.card
   }
 });
+
+const mapCard = payload => {
+  return {
+    activity: payload.activity,
+    estimated: payload.estimated,
+    priority: payload.priority,
+    color: payload.color
+  }
+}

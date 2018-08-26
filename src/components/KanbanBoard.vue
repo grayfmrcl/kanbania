@@ -10,7 +10,7 @@
           :key="column.key" 
           :column="column" />
       </v-layout>
-    <KanbanCardDetail />
+    <KanbanCardDetail :columns="columns" />
     </v-container>
   </v-container>
 </template>
