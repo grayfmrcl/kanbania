@@ -4,7 +4,7 @@
         <v-card-title>
           <span class="headline">Task Card</span>
           <v-spacer></v-spacer>
-          <v-menu bottom left v-if="task.cardKey">
+          <v-menu bottom left v-if="cardKey">
             <v-btn slot="activator" icon>
               <v-icon>more_vert</v-icon>
             </v-btn>
@@ -21,31 +21,31 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12>
-                <v-text-field label="Activity" v-model="task.activity" clearable></v-text-field>
+                <v-text-field label="Activity" v-model="activity" clearable></v-text-field>
               </v-flex>
               <v-flex xs10>
                   <v-slider 
-                    v-model="task.estimated"
-                    messages="*break the task if the estimated time is more than 12 hours"
+                    v-model="estimated"
                     max="12"
                     min="0"
+                    messages="*break the task if the estimated time is more than 12 hours"
                     ></v-slider>
               </v-flex>
               <v-flex xs2>
-                <span>{{ task.estimated }} hours</span>
+                <v-text-field v-model="estimated" suffix="hours" class="mt-0"></v-text-field>
               </v-flex>
               <v-flex xs12 sm6>
                 <v-select
                   :items="['grey', 'red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue', 'light-blue', 'cyan', 'teal', 'green', 'light-green', 'lime', 'yellow', 'amber', 'orange', 'deep-orange', 'brown']"
                   label="Color"
-                  v-model="task.color"
+                  v-model="color"
                 ></v-select>
               </v-flex>
               <v-flex xs12 sm6>
                 <v-select
                   :items="['', 'low', 'high']"
                   label="Priority"
-                  v-model="task.priority"
+                  v-model="priority"
                 ></v-select>
               </v-flex>
             </v-layout>
@@ -55,7 +55,7 @@
           <v-layout row wrap>
             <v-flex xs4>
               <v-btn 
-                v-if="task.cardKey && prevColumnKey" 
+                v-if="cardKey && prevColumnKey" 
                 class="kanban-prev-btn" 
                 color="blue darken-1" 
                 flat
@@ -72,7 +72,7 @@
             </v-flex>
             <v-flex xs4>
               <v-btn 
-                v-if="task.cardKey && nextColumnKey" 
+                v-if="cardKey && nextColumnKey" 
                 class="kanban-next-btn" 
                 color="blue darken-1" 
                 flat
@@ -89,7 +89,7 @@
              <span class="title">Are you sure to delete?</span>
           </v-card-title>
           <v-card-text>
-            <span class="subheading">{{task.activity}}</span>
+            <span class="subheading">{{activity}}</span>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -108,32 +108,47 @@ export default {
   props: ["columns"],
   data() {
     return {
-      task: {},
+      cardKey: "",
+      columnKey: "",
+      activity: "",
+      estimated: 0,
+      priority: "",
+      color: "",
       confirmDialog: false
     };
   },
   methods: {
     saveCard() {
-      this.$store.dispatch("saveCard", this.task);
+      this.$store.dispatch("saveCard", this.mapCard());
     },
     deleteCard() {
       this.confirmDialog = false;
       this.$store.dispatch("deleteCard", {
-        cardKey: this.task.cardKey,
-        columnKey: this.task.columnKey
+        cardKey: this.cardKey,
+        columnKey: this.columnKey
       });
     },
     moveToNextColumn() {
       this.$store.dispatch(
         "moveCardToColumn",
-        Object.assign({ newColumnKey: this.nextColumnKey }, this.task)
+        Object.assign({ newColumnKey: this.nextColumnKey }, this.mapCard())
       );
     },
     moveToPrevColumn() {
       this.$store.dispatch(
         "moveCardToColumn",
-        Object.assign({ newColumnKey: this.prevColumnKey }, this.task)
+        Object.assign({ newColumnKey: this.prevColumnKey }, this.mapCard())
       );
+    },
+    mapCard() {
+      return {
+        cardKey: this.cardKey,
+        columnKey: this.columnKey,
+        activity: this.activity,
+        estimated: this.estimated,
+        priority: this.priority,
+        color: this.color
+      };
     }
   },
   computed: {
@@ -163,12 +178,12 @@ export default {
   watch: {
     dialog(selected) {
       if (selected) {
-        this.task.cardKey = this.card.key;
-        this.task.columnKey = this.card.columnKey;
-        this.task.activity = this.card.activity;
-        this.task.estimated = this.card.estimated || 0;
-        this.task.priority = this.card.priority || "";
-        this.task.color = this.card.color || "grey";
+        this.cardKey = this.card.key;
+        this.columnKey = this.card.columnKey;
+        this.activity = this.card.activity;
+        this.estimated = this.card.estimated || 0;
+        this.priority = this.card.priority || "";
+        this.color = this.card.color || "grey";
       }
     }
   }

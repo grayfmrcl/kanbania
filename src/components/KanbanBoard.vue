@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-layout column align-center>
-      <h1>Kanban Board</h1>
+      <h1>Board</h1>
     </v-layout>
     <v-container fluid grid-list-lg>
       <v-layout row wrap class="kanban-columns">
@@ -26,8 +26,7 @@ export default {
     KanbanCardDetail
   },
   created() {
-    this.$store.dispatch("fetchColumns");
-    this.$store.dispatch("fetchCards");
+    this.$store.dispatch("initProject");
   },
   computed: {
     columns: function() {

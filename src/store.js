@@ -6,19 +6,22 @@ import { watch } from 'fs';
 
 const projectsRef = db.ref('projects');
 const columnsRef = db.ref('columns');
-const cardsRef = db.ref('tasks')
+const cardsRef = db.ref('cards')
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    project_id: 'project1',
+    project_id: '',
     columns: {},
     cards: {},
     card: {},
     cardDialog: false
   },
   mutations: {
+    PROJECT_INITIALIZED(state, projectId) {
+      state.project_id = projectId
+    },
     COLUMNS_FETCHED(state, columns) {
       state.columns = columns
     },
@@ -43,16 +46,14 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    initProjects({ commit }) {
-      const defaultColumns = './default_columns.json';
+    initProject({ dispatch, commit }) {
       const project_id = 'project1';
-      Promise.all([
-        projectsRef.child(project_id).set({ title: 'Initial project' }),
-        columnsRef.child(project_id).push(defaultColumns),
-      ])
+      columnsRef.child(project_id).set(defaultColumns)
         .then(() => {
-          commit('PROJECT_INITIALIZED');
-        });
+          commit('PROJECT_INITIALIZED', project_id);
+          dispatch('fetchColumns')
+          dispatch('fetchCards')
+        })
     },
     fetchColumns({ state, commit }) {
       columnsRef
@@ -125,5 +126,28 @@ const mapCard = payload => {
     estimated: payload.estimated,
     priority: payload.priority,
     color: payload.color
+  }
+}
+
+const defaultColumns = {
+  backlog: {
+    title: `Backlog`,
+    order: 1,
+    count: 0
+  },
+  todo: {
+    title: `To Do`,
+    order: 2,
+    count: 0
+  },
+  inprogress: {
+    title: `In Progress`,
+    order: 3,
+    count: 0,
+  },
+  done: {
+    title: `Done`,
+    order: 4,
+    count: 0,
   }
 }
