@@ -14,6 +14,9 @@ import {
   VChip,
   VDivider,
   VDialog,
+  VTextField,
+  VSelect,
+  VSlider,
   transitions,
 } from 'vuetify';
 import 'vuetify/src/stylus/app.styl';
@@ -33,6 +36,9 @@ Vue.use(Vuetify, {
     VChip,
     VDivider,
     VDialog,
+    VTextField,
+    VSelect,
+    VSlider,
     transitions,
   },
   theme: {

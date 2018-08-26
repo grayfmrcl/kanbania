@@ -1,22 +1,25 @@
 <template>
-  <v-flex xs3>
-    <v-toolbar :color="columnColor" dark>
-      <v-toolbar-title>{{column.title}}</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon @click="addCard">
-        <v-icon>add</v-icon>
-      </v-btn>
-    </v-toolbar>
-    <v-card :class="columnColor" class="lighten-4">
-        <v-container fluid grid-list-lg>
-          <v-layout row wrap>
-            <KanbanCard 
-              v-for="card in cards" 
-              :key="card.key" 
-              :card="card" />
-          </v-layout>
-        </v-container>
-      </v-card>
+  <v-flex xs12 lg3 md4 sm6 class="kanban-column">
+    <v-container fluid grid-list-lg>
+      <div class="kanban-column-header">
+        <div class="title" style="margin: auto">
+          <span>{{column.title}}</span>
+          <span v-if="column.count > 0"> ({{column.count}})</span>
+        </div>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="addCard">
+          <v-icon>add</v-icon>
+        </v-btn>
+      </div>
+      <v-layout row wrap>
+        <KanbanCard 
+          v-for="card in cards" 
+          :key="card.key"
+          :card="card"
+          :columnkey="column.key" />
+      </v-layout>
+    </v-container>
+    
   </v-flex>
 </template>
 
@@ -31,11 +34,7 @@ export default {
   props: ["column"],
   methods: {
     addCard() {
-      let card = { title: "Another task" };
-      this.$store.dispatch("addCard", {
-        columnKey: "selected",
-        content: card
-      });
+      this.$store.commit("ADD_CARD", { columnKey: this.column.key });
     }
   },
   computed: {
@@ -59,4 +58,9 @@ export default {
 </script>
 
 <style>
+.kanban-column-header {
+  display: flex;
+  flex-flow: row wrap;
+  padding-bottom: 1rem;
+}
 </style>

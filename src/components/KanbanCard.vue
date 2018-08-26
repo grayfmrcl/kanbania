@@ -29,12 +29,16 @@
 <script>
 export default {
   name: "KanbanCard",
+  props: ["card", "columnkey"],
   data() {
     return {};
   },
   methods: {
     selectCard() {
-      this.$store.dispatch("selectCard");
+      this.$store.dispatch("selectCard", {
+        columnKey: this.columnkey,
+        cardKey: this.card.key
+      });
     }
   },
   computed: {
@@ -44,8 +48,7 @@ export default {
     cardColor() {
       return this.card.color || "grey";
     }
-  },
-  props: ["card"]
+  }
 };
 </script>
 

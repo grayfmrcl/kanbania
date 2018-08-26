@@ -4,13 +4,13 @@
       <h1>Kanban Board</h1>
     </v-layout>
     <v-container fluid grid-list-lg>
-      <v-layout row wrap>
-      <KanbanColumn 
-        v-for="column in columns" 
-        :key="column.key" 
-        :column="column" />
-      <KanbanCardDetail />
-    </v-layout>
+      <v-layout row wrap class="kanban-columns">
+        <KanbanColumn 
+          v-for="column in columns" 
+          :key="column.key" 
+          :column="column" />
+      </v-layout>
+    <KanbanCardDetail />
     </v-container>
   </v-container>
 </template>
@@ -41,4 +41,7 @@ export default {
 </script>
 
 <style>
+.kanban-columns .kanban-column:not(:last-child) {
+  border-right: 1px solid #ddd;
+}
 </style>
