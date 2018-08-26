@@ -17,6 +17,7 @@ import {
   VTextField,
   VSelect,
   VSlider,
+  VMenu,
   transitions,
 } from 'vuetify';
 import 'vuetify/src/stylus/app.styl';
@@ -39,6 +40,7 @@ Vue.use(Vuetify, {
     VTextField,
     VSelect,
     VSlider,
+    VMenu,
     transitions,
   },
   theme: {

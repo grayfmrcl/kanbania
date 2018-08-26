@@ -72,6 +72,7 @@ export default new Vuex.Store({
       commit('CARD_SELECTED', payload)
     },
     saveCard({ state, commit }, payload) {
+      commit('CARD_UNSELECTED')
       let card = {
         activity: payload.activity,
         estimated: payload.estimated,
@@ -88,6 +89,16 @@ export default new Vuex.Store({
           .push(card)
         columnsRef.child(`${state.project_id}/${payload.columnKey}/count`)
           .transaction(val => (val || 0) + 1)
+      }
+    },
+    deleteCard({ state, commit }, payload) {
+      commit('CARD_UNSELECTED')
+      if (payload.cardKey && payload.columnKey) {
+        cardsRef
+          .child(`${state.project_id}/${payload.columnKey}/${payload.cardKey}`)
+          .remove()
+        columnsRef.child(`${state.project_id}/${payload.columnKey}/count`)
+          .transaction(val => (val || 0) - 1)
       }
     }
   },

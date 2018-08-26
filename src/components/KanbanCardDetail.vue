@@ -1,11 +1,21 @@
 <template>
-  <v-dialog
-      v-model="dialog"
-      max-width="500"
-    >
+  <v-dialog v-model="dialog" max-width="500">
       <v-card>
         <v-card-title>
           <span class="headline">Task Card</span>
+          <v-spacer></v-spacer>
+          <v-menu bottom left v-if="cardKey">
+            <v-btn slot="activator" icon>
+              <v-icon>more_vert</v-icon>
+            </v-btn>
+            <v-list>
+              <v-list-tile>
+                <v-list-tile @click="confirmDialog=true" color="blue darken-1">
+                  <v-list-tile-title>Delete</v-list-tile-title>
+                </v-list-tile>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
         </v-card-title>
         <v-card-text>
           <v-container grid-list-md>
@@ -45,8 +55,25 @@
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" flat @click.native="dialog = false">Close</v-btn>
           <v-btn color="blue darken-1" flat @click.native="saveCard">Save</v-btn>
+
         </v-card-actions>
       </v-card>
+
+      <v-dialog v-model="confirmDialog" max-width="400">
+        <v-card>
+          <v-card-title>
+             <span class="title">Are you sure to delete?</span>
+          </v-card-title>
+          <v-card-text>
+            <span class="subheading">{{activity}}</span>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" flat @click="deleteCard">Yes</v-btn>
+            <v-btn color="blue darken-1" flat @click="confirmDialog=false">No</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
     </v-dialog>
 </template>
@@ -56,6 +83,7 @@ export default {
   name: "KanbanCardDetail",
   data() {
     return {
+      confirmDialog: false,
       columnKey: "",
       cardKey: "",
       activity: "",
@@ -79,7 +107,6 @@ export default {
   },
   methods: {
     saveCard() {
-      this.dialog = false;
       this.$store.dispatch("saveCard", {
         cardKey: this.cardKey,
         columnKey: this.columnKey,
@@ -87,6 +114,13 @@ export default {
         estimated: this.estimated > 0 ? this.estimated : null,
         priority: this.priority.length > 1 ? this.priority : null,
         color: this.color ? this.color : "grey"
+      });
+    },
+    deleteCard() {
+      this.confirmDialog = false;
+      this.$store.dispatch("deleteCard", {
+        cardKey: this.cardKey,
+        columnKey: this.columnKey
       });
     }
   },
